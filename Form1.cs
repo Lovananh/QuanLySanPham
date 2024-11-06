@@ -12,179 +12,149 @@ namespace QuanLySanPham
 {
     public partial class Form1 : Form
     {
-        private List<SanPham> danhSachSanPham = new List<SanPham>();
-        private int selectedRowIndex = -1;
+        //private List<SanPham> danhSachSanPham = new List<SanPham>();
+        //private int selectedRowIndex = -1;
+
         public Form1()
         {
             InitializeComponent();
+            dataGridView1.CellClick += dataGridView1_CellContentClick;
         }
 
+        Ketnoi kn = new Ketnoi();
+
+        public void getData()
+        {
+            string query = "select * from SanPham";
+            DataSet ds = kn.Laydulieu(query);
+            dataGridView1.DataSource = ds.Tables[0];
+        }
+        public void getLoaiSP()
+        {
+            string query = "select * from LoaiSanPham";
+            DataSet ds = kn.Laydulieu(query);
+            comboBoxLoaisp.Font = new Font("Segoe UI", 10);
+            comboBoxLoaisp.DataSource = ds.Tables[0];
+            comboBoxLoaisp.DisplayMember = "Tensp";
+            comboBoxLoaisp.ValueMember = "MaLoaiSP";
+
+        }
         private void btnLammoi_Click(object sender, EventArgs e)
         {
-            txtMasp.Clear();
-            txtTensp.Clear();
-            txtDongia.Clear();
-            txtHinhanh.Clear();
-            txtMotangan.Clear();
-            txtMotachitiet.Clear();
-            comboBoxLoaisp.SelectedIndex = -1;
-            selectedRowIndex = -1;
+
+            txtMasp.Enabled = true;
+            btnThem.Enabled = true;
+            btnSua.Enabled = false;
+            btnXoa.Enabled = false;
+            txtMasp.Text = "";
+            txtTensp.Text = "";
+            txtTimkiem.Text = "";
+            txtDongia.Text = "";
+            txtHinhanh.Text = "";
+            txtMotangan.Text = "";
+            txtMotachitiet.Text = "";
+            //comboBoxLoaisp.SelectedIndex = -1;
+            //selectedRowIndex = -1;
+            getData();
         }
         private void btnThem_Click(object sender, EventArgs e)
         {
-            try
+            
+            string query = string.Format(
+                "insert into Sanpham VALUES('{0}', N'{1}', {2}, N'{3}', N'{4}', N'{5}', N'{6}')",
+                txtMasp.Text,
+                txtTensp.Text,
+                txtDongia.Text,
+                txtHinhanh.Text,
+                txtMotangan.Text,
+                txtMotachitiet.Text,
+                comboBoxLoaisp.SelectedValue
+            );
+            if (kn.ThucThi(query) == true)
             {
-                string maSP = txtMasp.Text;
-                string tenSP = txtTensp.Text;
-                decimal donGia;
-                if (!decimal.TryParse(txtDongia.Text, out donGia))
-                {
-                    MessageBox.Show("Đơn giá không hợp lệ.");
-                    return;
-                }
-                string hinhAnh = txtHinhanh.Text;
-                string moTaNgan = txtMotangan.Text;
-                string moTaChiTiet = txtMotachitiet.Text;
-                var loaiSP = comboBoxLoaisp.SelectedItem?.ToString();
-
-                if (string.IsNullOrEmpty(loaiSP))
-                {
-                    MessageBox.Show("Vui lòng chọn loại sản phẩm.");
-                    return;
-                }
-
-                // Sử dụng constructor của SanPham để tạo đối tượng
-                SanPham sanPham = new SanPham(maSP, tenSP, donGia, hinhAnh, moTaNgan, moTaChiTiet, loaiSP);
-
-                // Thêm sản phẩm vào danh sách
-                danhSachSanPham.Add(sanPham);
-
-                // Cập nhật lại DataGridView
-                dataGridView1.DataSource = null; // Đặt lại nguồn dữ liệu để làm mới
-                dataGridView1.DataSource = danhSachSanPham; // Cập nhật nguồn dữ liệu
-
-                // Xóa các TextBox và ComboBox
-                txtMasp.Clear();
-                txtTensp.Clear();
-                txtDongia.Clear();
-                txtHinhanh.Clear();
-                txtMotangan.Clear();
-                txtMotachitiet.Clear();
-                comboBoxLoaisp.SelectedIndex = -1;
-
-                //MessageBox.Show(danhSachSanPham.Count.ToString());
+                MessageBox.Show("Thêm mới thành công!");
+                btnLammoi.PerformClick();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Lỗi: " + ex.Message);
+                MessageBox.Show("Thêm mới thất bại!");
             }
         }
-  
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            // dataGridView1.DataSource = laySanPham().Tables[0];
-            dataGridView1.DataSource = danhSachSanPham;
+            getLoaiSP();
+            getData();
         }
-
         private void btnSua_Click(object sender, EventArgs e)
         {
-
-            try
+            string query = string.Format(
+               "update Sanpham set Tensp = N'{1}', Dongia = {2}, Hinhanh = N'{3}', Motangan = N'{4}', Motachitiet = N'{5}', MaLoaiSP = '{6}' where MaSP = '{0}'",
+                txtMasp.Text,
+                txtTensp.Text,
+                txtDongia.Text,
+                txtHinhanh.Text,
+                txtMotangan.Text,
+                txtMotachitiet.Text,
+                comboBoxLoaisp.SelectedValue
+           );
+            if (kn.ThucThi(query) == true)
             {
-                if (dataGridView1.SelectedRows.Count > 0)
-                {
-                    int selectedRowIndex = dataGridView1.SelectedRows[0].Index;
-                    if (selectedRowIndex >= 0 && selectedRowIndex < danhSachSanPham.Count)
-                    {
-                        // Cập nhật thông tin sản phẩm
-                        var sanPham = danhSachSanPham[selectedRowIndex];
-                        sanPham.MaSP = txtMasp.Text;
-                        sanPham.TenSP = txtTensp.Text;
-                        sanPham.DonGia = decimal.Parse(txtDongia.Text);
-                        sanPham.HinhAnh = txtHinhanh.Text;
-                        sanPham.MoTaNgan = txtMotangan.Text;
-                        sanPham.MoTaChiTiet = txtMotachitiet.Text;
-                        sanPham.LoaiSP = comboBoxLoaisp.SelectedItem?.ToString();
-
-                        // Cập nhật lại DataGridView
-                        dataGridView1.DataSource = null;
-                        dataGridView1.DataSource = danhSachSanPham;
-
-                        // Xóa các trường nhập liệu
-                        txtMasp.Clear();
-                        txtTensp.Clear();
-                        txtDongia.Clear();
-                        txtHinhanh.Clear();
-                        txtMotangan.Clear();
-                        txtMotachitiet.Clear();
-                        comboBoxLoaisp.SelectedIndex = -1;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Chỉ mục hàng không hợp lệ.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Vui lòng chọn sản phẩm để sửa.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                MessageBox.Show("Sửa thành công!");
+                btnLammoi.PerformClick();
             }
-            catch (FormatException ex)
+            else
             {
-                MessageBox.Show("Lỗi định dạng: Vui lòng nhập đúng kiểu dữ liệu cho đơn giá!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Sửa thất bại!");
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Có lỗi xảy ra: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+
         }
 
         private void btnXoa_Click(object sender, EventArgs e)
         {
-            if (selectedRowIndex >= 0 && selectedRowIndex < danhSachSanPham.Count)
+            string query = string.Format(
+                "delete from Sanpham where Masp = '{0}'",
+                txtMasp.Text
+            );
+            if (kn.ThucThi(query) == true)
             {
-                // Xóa sản phẩm đã chọn
-                danhSachSanPham.RemoveAt(selectedRowIndex);
-
-                // Cập nhật lại DataGridView
-                dataGridView1.DataSource = null; // Đặt lại nguồn dữ liệu để làm mới
-                dataGridView1.DataSource = danhSachSanPham;
-
-                // Xóa các TextBox sau khi xóa
-
-
-                txtMasp.Clear();
-                txtTensp.Clear();
-                txtDongia.Clear();
-                txtHinhanh.Clear();
-                txtMotangan.Clear();
-                txtMotachitiet.Clear();
-                comboBoxLoaisp.SelectedIndex = -1;
-                selectedRowIndex = -1; // Reset chỉ số sau khi xóa
+                MessageBox.Show("Xóa thành công!");
+                btnLammoi.PerformClick();
             }
             else
             {
-                MessageBox.Show("Vui lòng chọn sản phẩm để xóa.");
+                MessageBox.Show("Xóa thất bại!");
             }
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.RowIndex < danhSachSanPham.Count)
+            int r = e.RowIndex;
+            if (r >= 0)
             {
-                // Lấy chỉ số hàng đã chọn
-                selectedRowIndex = e.RowIndex;
-
-                // Hiển thị thông tin sản phẩm lên các TextBox
-                var sanPham = danhSachSanPham[selectedRowIndex];
-                txtMasp.Text = sanPham.MaSP;
-                txtTensp.Text = sanPham.TenSP;
-                txtDongia.Text = sanPham.DonGia.ToString();
-                txtHinhanh.Text = sanPham.HinhAnh;
-                txtMotangan.Text = sanPham.MoTaNgan;
-                txtMotachitiet.Text = sanPham.MoTaChiTiet;
-                comboBoxLoaisp.SelectedItem = sanPham.LoaiSP;
+                txtMasp.Enabled = false;
+                btnThem.Enabled = false;
+                btnSua.Enabled = true;
+                btnXoa.Enabled = true;
+                txtMasp.Text = dataGridView1.Rows[r].Cells["MaSP"].Value.ToString();
+                txtTensp.Text = dataGridView1.Rows[r].Cells["TenSP"].Value.ToString();
+                txtDongia.Text = dataGridView1.Rows[r].Cells["DonGia"].Value.ToString();
+                txtHinhanh.Text = dataGridView1.Rows[r].Cells["HinhAnh"].Value.ToString();
+                txtMotangan.Text = dataGridView1.Rows[r].Cells["MoTaNgan"].Value.ToString();
+                txtMotachitiet.Text = dataGridView1.Rows[r].Cells["MoTaChiTiet"].Value.ToString();
+                comboBoxLoaisp.SelectedValue = dataGridView1.Rows[r].Cells["MaLoaiSp"].Value.ToString();
             }
+        }
+
+        private void btnTimkiem_Click(object sender, EventArgs e)
+        {
+            string query = string.Format(
+                "select Sanpham.* from Sanpham inner join LoaiSanPham on Sanpham.MaloaiSP = LoaiSanPham.MaloaiSP where SanPham.Tensp like N'%{0}%'",
+                txtTimkiem.Text
+            );
+            
+            DataSet ds = kn.Laydulieu(query);
+            dataGridView1.DataSource = ds.Tables[0];
         }
     }
 }

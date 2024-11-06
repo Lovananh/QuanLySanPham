@@ -136,12 +136,13 @@
             // 
             // btnTimkiem
             // 
-            this.btnTimkiem.Location = new System.Drawing.Point(562, 25);
+            this.btnTimkiem.Location = new System.Drawing.Point(634, 18);
             this.btnTimkiem.Name = "btnTimkiem";
             this.btnTimkiem.Size = new System.Drawing.Size(108, 34);
             this.btnTimkiem.TabIndex = 2;
             this.btnTimkiem.Text = "Tìm kiếm ";
             this.btnTimkiem.UseVisualStyleBackColor = true;
+            this.btnTimkiem.Click += new System.EventHandler(this.btnTimkiem_Click);
             // 
             // txtMasp
             // 
@@ -185,7 +186,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(678, 499);
+            this.dataGridView1.Size = new System.Drawing.Size(787, 499);
             this.dataGridView1.TabIndex = 3;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -244,7 +245,7 @@
             this.groupBox2.Controls.Add(this.lblTimkiem);
             this.groupBox2.Location = new System.Drawing.Point(456, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(691, 561);
+            this.groupBox2.Size = new System.Drawing.Size(818, 561);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Dữ liệu ";
@@ -306,7 +307,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1152, 585);
+            this.ClientSize = new System.Drawing.Size(1324, 585);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
